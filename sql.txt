@@ -1,0 +1,135 @@
+-- Table: public.livro
+
+-- DROP TABLE public.livro;
+
+CREATE TABLE public.livro
+(
+  id integer NOT NULL DEFAULT nextval('livro_seq'::regclass),
+  titulo character varying(200) NOT NULL,
+  autor character varying(200) NOT NULL,
+  cod_barra integer NOT NULL,
+  created_at timestamp without time zone,
+  updated_at timestamp without time zone,
+  CONSTRAINT livro_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.livro
+  OWNER TO postgres;
+
+/////////////////////////////////////////////////////////////////
+CREATE TABLE livro
+(
+id integer NOT NULL DEFAULT nextval('livro_seq'::regclass),
+titulo character varying(200) NOT NULL,
+autor varchar (100) not null,
+cod_barra integer not null,
+created_at timestamp without time zone,
+updated_at timestamp without time zone,
+CONSTRAINT livro_pk PRIMARY KEY (id),
+foreign key (id_autor) references autor (id_autor)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE livro
+OWNER TO postgres;
+
+
+
+CREATE TABLE autor
+(
+id_autor integer NOT NULL DEFAULT nextval('autor_seq'::regclass),
+nome_autor character varying(200) NOT NULL,
+created_at timestamp without time zone,
+updated_at timestamp without time zone,
+CONSTRAINT autor_pk PRIMARY KEY (id_autor)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE autor
+OWNER TO postgres;
+
+
+
+
+//////////////////////////////////////////////////////////////////
+Album
+<?php
+
+namespace Todolist\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Album extends Model {
+	public $timestamps = false;
+	protected $primaryKey = 'id_album';
+    protected $table = "albuns";
+    protected $fillable = array('nome','id_banda');
+
+    public function banda()
+    {
+        return $this->belongsTo('Todolist\Models\Banda','id_banda');
+    }
+
+}
+
+Banda
+<?php
+
+namespace Todolist\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Banda extends Model {
+	public $timestamps = false;
+	protected $primaryKey = 'id_banda';
+    protected $table = "bandas";
+    protected $fillable = array('nome','vocalista');
+
+    public function albuns()
+    {
+        return $this->hasMany('Todolist\Models\Album');
+    }
+
+    public function musicas()
+    {
+        return $this->hasMany('Todolist\Models\Musica');
+    }
+
+}
+
+
+Exemplo de listar albuns
+
+@extends('principal')
+@section('conteudo')
+<h2>Albuns</h2>
+
+<a href="novo_album">Novo album</a>
+
+<table>
+    <thead>
+        <th>Nome</th>
+        <th>Banda</th>
+        <th>Gerenciar</th>
+    </thead>
+@foreach ($albuns as $album)
+    <tr>
+        <td>{{ $album->nome }}</td>
+        <td>{{ $album->banda->nome }}</td>
+        <td>
+            <a href="{{ url('albuns/alterar_album/'.$album->id_album) }}">
+                Alterar
+            </a>
+            <a href="{{ url('albuns/excluir_album/'.$album->id_album) }}">
+                Excluir
+            </a>
+        </td>
+    </tr>
+@endforeach
+</table>
+
+@stop
